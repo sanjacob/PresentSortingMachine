@@ -4,7 +4,7 @@
 
 > You must develop a console-based Java application to simulate Patent Present-Sorter over a single period of operation at the theme park. Your application should produce a report detailing the status of the machine at the end of operations.
 
-For the full specification of the Patent Present-Sorting Machine, see [here](CO3408\ Assignment\ Part\ 1\ 2022-23.pdf)
+For the full specification of the Patent Present-Sorting Machine, see [here][docs].
 
 
 
@@ -33,3 +33,4 @@ This software is distributed under the [General Public License v2.0][license], m
 [license-badge]: https://img.shields.io/github/license/jacobszpz/PatentPresent-SortingMachine
 
 [idea]: https://www.jetbrains.com/idea/
+[docs]: CO3408_Assignment_Part_1_2022-23.pdf
