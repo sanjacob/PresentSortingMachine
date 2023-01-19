@@ -4,14 +4,14 @@
  */
 public class Present
 {
-    String ageRange;
+    private String ageRange;
 
     public Present(String destination)
     {
         ageRange = destination;
     }
 
-    public String readDestination()
+    public String destination()
     {
         return ageRange;
     }

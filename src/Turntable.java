@@ -1,5 +1,5 @@
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Scanner;
 
 /**
  *
@@ -35,10 +35,9 @@ public class Turntable extends Thread
         {
             if(conn.connType == ConnectionType.OutputBelt)
             {
-                Iterator<Integer> it = conn.belt.destinations.iterator();
-                while(it.hasNext())
+                for (Integer destination : conn.belt.destinations)
                 {
-                    outputMap.put(it.next(), port);
+                    outputMap.put(destination, port);
                 }
             }
             else if(conn.connType == ConnectionType.OutputSack)
@@ -51,5 +50,37 @@ public class Turntable extends Thread
     public void run()
     {
         // TODO
+    }
+
+    public static Turntable parseString(String line, Conveyor[] belts, Sack[] sacks) {
+        Scanner inputStream = new Scanner(line);
+        String tableId = inputStream.next();
+        Turntable turntable = new Turntable(tableId);
+        int connId = 0;
+
+        for(int i = 0; i < 4; i++){
+            String direction = inputStream.next();
+            String type = inputStream.next();
+
+            if (!"null".equals(type)){
+                connId = inputStream.nextInt();
+
+                Connection connection = null;
+                switch (type) {
+                    case "os":
+                        connection = new Connection(ConnectionType.OutputSack, null, sacks[connId - 1]);
+                        break;
+                    case "ib":
+                        connection = new Connection(ConnectionType.InputBelt, belts[connId - 1], null);
+                        break;
+                    case "ob":
+                        connection = new Connection(ConnectionType.OutputBelt, belts[connId - 1], null);
+                        break;
+                }
+                turntable.addConnection(i, connection);
+            }
+        }
+
+        return turntable;
     }
 }
