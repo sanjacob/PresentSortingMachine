@@ -6,12 +6,24 @@ import java.util.Scanner;
  */
 public class Hopper extends Thread
 {
-    int id;
-    Conveyor belt;
-    int speed;
+    private final int id;
+    private final Conveyor belt;
+    private final int speed;
 
-    Present[] collection;
+    private final Present[] collection;
     private int numPresents;
+
+    synchronized public int getHopperId() {
+        return id;
+    }
+
+    synchronized public boolean canFit(int count) {
+        return collection.length >= count;
+    }
+
+    synchronized public int count() {
+        return numPresents;
+    }
 
     public Hopper(int id, Conveyor con, int capacity, int speed)
     {
@@ -22,10 +34,10 @@ public class Hopper extends Thread
         numPresents = 0;
     }
 
-    public void fill(Present p)
+    synchronized public void fill(Present p)
     {
         if (numPresents < collection.length){
-            System.out.println("Inserting present " + p.destination() + " at position " + numPresents);
+            //System.out.println("Inserting present " + p.destination() + " at position " + numPresents);
             collection[numPresents] = p;
             numPresents++;
         }
@@ -34,7 +46,28 @@ public class Hopper extends Thread
     @Override
     public void run()
     {
-        // TODO
+        synchronized (this) {
+            // While hopper has gifts
+            while (numPresents > 0) {
+                // Attempt to put in conveyor
+                if (belt.putPresent(collection[numPresents - 1])) {
+                    numPresents--;
+                } else {
+                    // Release mutex until there is more space
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                try {
+                    sleep(1000/speed);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 
     /** A factory that parses a string and constructs a Hopper object.

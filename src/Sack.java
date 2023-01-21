@@ -2,21 +2,42 @@ import java.util.Scanner;
 
 /**
  *
+ * @author Jacob
  * @author Nick
  */
 public class Sack
 {
-    int id;
-    Present[] accumulation;
+    private final int id;
+    private final Present[] accumulation;
 
-    String ageRange;
+    private final String ageRange;
+
+    /**
+     * Index of next element to be placed
+     */
     private int numPresents;
+
+    synchronized public int getSackId() {
+        return id;
+    }
+
+    synchronized public String getAgeRange() {
+        return ageRange;
+    }
+
+    /**
+     * @return The number of presents in the sack.
+     */
+    synchronized public int count() {
+        return numPresents;
+    }
 
     public Sack(int id, int capacity, String ageRange)
     {
         accumulation = new Present[capacity];
         this.id = id;
         this.ageRange = ageRange;
+        numPresents = 0;
     }
 
     /** A factory that parses a string and constructs a Sack object.
@@ -35,8 +56,34 @@ public class Sack
         return new Sack(id, capacity, age);
     }
 
-    synchronized public boolean isFull() {
-        return numPresents >= accumulation.length;
+    /**
+     * Check if Sack is full and cannot accept any more presents.
+     * @return True if the Sack has enough space.
+     */
+    synchronized public boolean hasSpace() {
+        return numPresents < accumulation.length;
+    }
+
+    /**
+     * Attempt to put a Present in the Sack.
+     * @param present The Present to place in the Sack.
+     * @return True if there is space for the Present, otherwise false.
+     */
+    synchronized public boolean putPresent(Present present) {
+        if (hasSpace()) {
+            // Append item and increase count
+            accumulation[numPresents] = present;
+            numPresents++;
+        }
+
+        return hasSpace();
+    }
+
+    /**
+     * Removes all Presents from the collection.
+     */
+    synchronized public void clear() {
+        numPresents = 0;
     }
 
     //TODO - Add more methods

@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.concurrent.Callable;
 
 import static java.lang.Thread.sleep;
 
@@ -9,9 +10,11 @@ public class PresentSortingMachine {
     private Turntable[] tables;
 
     private int timerLength;
-    private String configFile;
+    private final String configFile;
     private long startTime = 0;
     private long endTime = 0;
+
+    private final int WAIT_INTERVAL = 1000;
 
 
     public PresentSortingMachine(String fileName) {
@@ -20,44 +23,31 @@ public class PresentSortingMachine {
     }
 
     public void run() {
-        // START the hoppers!
-        for (int h = 0; h < hoppers.length; h++)
-        {
-            hoppers[h].start();
-        }
-
-        // START the turntables!
-        for (int t = 0; t < hoppers.length; t++)
-        {
-            tables[t].start();
-        }
+        startHoppersAndTables();
 
         long time = 0;
         long currentTime = 0;
         startTime = System.currentTimeMillis();
         System.out.println("*** Machine Started ***");
+
         while (time < timerLength)
         {
             // sleep in 10 second bursts
             try
             {
-                sleep(10000);
+                sleep(WAIT_INTERVAL);
             }
             catch (InterruptedException ex)
             {
+                throw new RuntimeException(ex);
             }
 
             currentTime = System.currentTimeMillis();
             time = (currentTime - startTime) / 1000;
             System.out.println("\nInterim Report @ " + time + "s:");
 
-            int giftsInSacks = 0;
-            // TODO - calculate number
-
-            int giftsInHoppers = 0;
-            // TODO - calculate number
-
-            System.out.println(giftsInHoppers + " presents remaining in hoppers;\n" + giftsInSacks + " presents sorted into sacks.\n");
+            System.out.println(countHopperPresents() + " presents remaining in hoppers;");
+            System.out.println(countSackPresents() + " presents sorted into sacks.\n");
 
         }
         endTime = System.currentTimeMillis();
@@ -71,6 +61,36 @@ public class PresentSortingMachine {
         endTime = System.currentTimeMillis();
         System.out.println("*** Machine completed shutdown after " + (endTime - startTime) / 1000 + "s. ***");
 
+    }
+
+    private void startHoppersAndTables() {
+        // START the hoppers!
+        for (Hopper hopper : hoppers) {
+            hopper.start();
+        }
+
+        // START the turntables!
+        for (Turntable table : tables) {
+            table.start();
+        }
+    }
+
+    private int countHopperPresents() {
+        int count = 0;
+        for (Hopper hopper : hoppers) {
+            count += hopper.count();
+        }
+
+        return count;
+    }
+
+    private int countSackPresents() {
+        int count = 0;
+        for (Sack sack : sacks) {
+            count += sack.count();
+        }
+
+        return count;
     }
 
     public void parseFile(String fileName) {
@@ -137,7 +157,7 @@ public class PresentSortingMachine {
                 break;
             case PRESENTS:
                 // Assert it can fit in the hopper
-                if (hoppers[sectionIndex - 1].collection.length < count) {
+                if (!hoppers[sectionIndex - 1].canFit(count)) {
                     throw new IndexOutOfBoundsException(ErrorCodes.HOPPER_AT_CAPACITY.getMsg());
                 }
                 break;
@@ -157,7 +177,7 @@ public class PresentSortingMachine {
             case SACKS:
                 if (sacks.length < itemIndex) {throw new IndexOutOfBoundsException(ErrorCodes.ITEM_OUT_OF_RANGE.getMsg());}
                 sacks[itemIndex] = Sack.parseString(line);
-                Turntable.destinations.put(sacks[itemIndex].ageRange, sacks[itemIndex].id);
+                Turntable.addDestination(sacks[itemIndex].getAgeRange(), sacks[itemIndex].getSackId());
                 break;
             case TURNTABLES:
                 if (tables.length < itemIndex) {throw new IndexOutOfBoundsException(ErrorCodes.ITEM_OUT_OF_RANGE.getMsg());}
@@ -179,7 +199,7 @@ public class PresentSortingMachine {
         // TODO - calculate this number!
 
         for (Hopper hopper : hoppers) {
-            System.out.println("Hopper " + hopper.id + " deposited " + /* TODO */ " presents and waited " + /* TODO */ "s.");
+            System.out.println("Hopper " + hopper.getHopperId() + " deposited " + /* TODO */ " presents and waited " + /* TODO */ "s.");
         }
         System.out.println();
 

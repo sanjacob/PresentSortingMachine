@@ -1,17 +1,18 @@
 /**
  *
+ * @author Jacob
  * @author Nick
  */
 public class Present
 {
-    private String ageRange;
+    private final String ageRange;
 
     public Present(String destination)
     {
         ageRange = destination;
     }
 
-    public String destination()
+    synchronized public String destination()
     {
         return ageRange;
     }

@@ -7,24 +7,28 @@ import java.util.Scanner;
  */
 public class Turntable extends Thread
 {
-    String id;
+    private final String id;
 
-    static int N = 0;
-    static int E = 1;
-    static int S = 2;
-    static int W = 3;
+    static final int N = 0;
+    static final int E = 1;
+    static final int S = 2;
+    static final int W = 3;
 
-    Connection[] connections = new Connection[4];
+    private final Connection[] connections = new Connection[4];
 
     // global lookup: age-range -> SackID
-    static HashMap<String, Integer> destinations = new HashMap<>();
+    private static HashMap<String, Integer> destinations = new HashMap<>();
 
     // this individual table's lookup: SackID -> output port
-    HashMap<Integer, Integer> outputMap = new HashMap<>();
+    private final HashMap<Integer, Integer> outputMap = new HashMap<>();
 
     public Turntable (String ID)
     {
         id = ID;
+    }
+
+    synchronized public static Integer addDestination(String key, int destination) {
+        return destinations.put(key, destination);
     }
 
     public void addConnection(int port, Connection conn)
@@ -35,21 +39,25 @@ public class Turntable extends Thread
         {
             if(conn.connType == ConnectionType.OutputBelt)
             {
-                for (Integer destination : conn.belt.destinations)
+                for (Integer destination : conn.belt.getDestinations())
                 {
                     outputMap.put(destination, port);
                 }
             }
             else if(conn.connType == ConnectionType.OutputSack)
             {
-                outputMap.put(conn.sack.id, port);
+                outputMap.put(conn.sack.getSackId(), port);
             }
         }
     }
 
     public void run()
     {
-        // TODO
+        for (Connection conn : connections) {
+            if (conn.connType == ConnectionType.InputBelt && conn.belt != null) {
+                Present present = conn.belt.popPresent();
+            }
+        }
     }
 
     public static Turntable parseString(String line, Conveyor[] belts, Sack[] sacks) {

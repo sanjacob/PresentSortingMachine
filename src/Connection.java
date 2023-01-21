@@ -3,9 +3,9 @@
  * @author npmitchell
  */
 public class Connection {
-    ConnectionType connType;
-    Conveyor belt;
-    Sack sack;
+    public final ConnectionType connType;
+    public final Conveyor belt;
+    public final Sack sack;
 
     public Connection(ConnectionType ct, Conveyor c, Sack s)
     {
