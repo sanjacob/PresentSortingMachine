@@ -1,8 +1,11 @@
 import java.io.*;
-import java.util.concurrent.Callable;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * Represents an instance of the Present Sorting Machine.
+ * @author Jacob <jsanchez-perez@uclan.ac.uk>
+ */
 public class PresentSortingMachine {
     private Conveyor[] belts;
     private Hopper[] hoppers;
@@ -10,19 +13,29 @@ public class PresentSortingMachine {
     private Turntable[] tables;
 
     private int timerLength;
+    private int totalPresents;
     private final String configFile;
     private long startTime = 0;
     private long endTime = 0;
 
+    /**
+     * The number of milliseconds to wait between updates.
+     */
     private final int WAIT_INTERVAL = 1000;
 
+    private final int SHUTDOWN_WAIT = 1000;
 
+    /**
+     * Create a new Present Sorting Machine instance
+     * @param fileName A configuration file to start the machine to.
+     */
     public PresentSortingMachine(String fileName) {
         configFile = fileName;
         parseFile(fileName);
     }
 
-    public void run() {
+    public void run() throws InterruptedException {
+        System.out.println("Starting Hoppers and Turntables...");
         startHoppersAndTables();
 
         long time = 0;
@@ -46,53 +59,80 @@ public class PresentSortingMachine {
             time = (currentTime - startTime) / 1000;
             System.out.println("\nInterim Report @ " + time + "s:");
 
-            System.out.println(countHopperPresents() + " presents remaining in hoppers;");
-            System.out.println(countSackPresents() + " presents sorted into sacks.\n");
+            System.out.println(Hopper.getTotalPresents() + " presents remaining in hoppers;");
+            System.out.println(Sack.getTotalPresents() + " presents sorted into sacks.\n");
 
         }
+
         endTime = System.currentTimeMillis();
         System.out.println("*** Input Stopped after " + (endTime - startTime) / 1000 + "s. ***");
 
-        // TODO
-        // Stop the hoppers!
-        // Stop the tables!
-        // HINT - Wait for everything to finish...
+        stopHoppers();
+
+        // Wait until Sacks are full or all presents have been deposited
+        joinHoppersAndTables();
 
         endTime = System.currentTimeMillis();
         System.out.println("*** Machine completed shutdown after " + (endTime - startTime) / 1000 + "s. ***");
 
     }
 
+    /**
+     * Loop over all hoppers and turntables and start them.
+     */
     private void startHoppersAndTables() {
-        // START the hoppers!
-        for (Hopper hopper : hoppers) {
-            hopper.start();
-        }
+        // Start turntables before hoppers since they are going to wait anyway.
 
         // START the turntables!
         for (Turntable table : tables) {
             table.start();
         }
-    }
 
-    private int countHopperPresents() {
-        int count = 0;
+        // START the hoppers!
         for (Hopper hopper : hoppers) {
-            count += hopper.count();
+            hopper.start();
         }
-
-        return count;
     }
 
-    private int countSackPresents() {
-        int count = 0;
-        for (Sack sack : sacks) {
-            count += sack.count();
+    /**
+     * Loop over all hoppers and interrupt them.
+     */
+    private void stopHoppers() {
+        // Interrupt the hoppers!
+        for (Hopper hopper : hoppers) {
+            hopper.interrupt();
         }
-
-        return count;
     }
 
+    /**
+     * Loop over all turntables and interrupt them.
+     */
+    private void stopTurntables() {
+        // START the turntables!
+        for (Turntable table : tables) {
+            table.interrupt();
+        }
+    }
+
+    /**
+     * Loop over all hoppers and turntables and wait for them to stop.
+     */
+    private void joinHoppersAndTables() throws InterruptedException {
+        // START the hoppers!
+        for (Hopper hopper : hoppers) {
+            hopper.join();
+        }
+
+        // START the turntables!
+        for (Turntable table : tables) {
+            table.join();
+        }
+    }
+
+    /**
+     * Parse a configuration file following a specific format.
+     * @param fileName The file name of the config file.
+     */
     public void parseFile(String fileName) {
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -135,12 +175,22 @@ public class PresentSortingMachine {
         }
     }
 
+    /**
+     * @return String representation of the machine setup (not exhaustive).
+     */
     @Override
     public String toString() {
         return String.format("PSM (%d s): %d belts, %d hoppers, %d sacks, %d turntables.", timerLength,
                 belts.length, hoppers.length, sacks.length, tables.length);
     }
 
+    /**
+     * Decides what to do with the second line in a section of the configuration file.
+     * @param count The integer parsed from the line.
+     * @param parserType The type of Object being parsed.
+     * @param sectionIndex The index of the section.
+     * @see ParserType
+     */
     private void setCount(int count, ParserType parserType, int sectionIndex) {
         switch (parserType) {
             case BELTS:
@@ -164,6 +214,14 @@ public class PresentSortingMachine {
         }
     }
 
+    /**
+     * Decides what to do with a line of the configuration file.
+     * @param line The line from the configuration file.
+     * @param parserType The type of Object being parsed.
+     * @param itemIndex The number of line inside this section.
+     * @param sectionIndex The section number.
+     * @see ParserType
+     */
     private void parseLine(String line, ParserType parserType, int itemIndex, int sectionIndex) {
         switch (parserType) {
             case BELTS:
@@ -185,33 +243,63 @@ public class PresentSortingMachine {
                 break;
             case PRESENTS:
                 hoppers[sectionIndex - 1].fill(new Present(line));
+                ++totalPresents;
                 break;
         }
     }
 
+    /**
+     * Get count of all gifts held in belts.
+     * Since other threads are not running getting the lock is not problematic.
+     * @return The number of gifts.
+     */
+    private int getConveyorCount() {
+        int count = 0;
+        for (Conveyor conveyor : belts) {
+            count += conveyor.getCount();
+        }
+
+        return count;
+    }
+
+    /**
+     * Get count of all gifts held in Turntables.
+     * Since other threads are not running getting the lock is not problematic.
+     * @return The number of gifts.
+     */
+    private int getTurntableCount() {
+        int count = 0;
+        for (Turntable turntable : tables) {
+            count += turntable.count();
+        }
+
+        return count;
+    }
+
+    /**
+     * Prints a final report of the machine activity.
+     */
     public void printReport() {
         System.out.println();
         System.out.println("\nFINAL REPORT\n");
         System.out.println("Configuration: " + configFile);
         System.out.println("Total Run Time: " + (endTime - startTime) / 1000 + "s.");
 
-        int giftsDeposited = 0;
-        // TODO - calculate this number!
-
         for (Hopper hopper : hoppers) {
-            System.out.println("Hopper " + hopper.getHopperId() + " deposited " + /* TODO */ " presents and waited " + /* TODO */ "s.");
+            System.out.print("Hopper " + hopper.getHopperId() + " deposited " + hopper.presentsDeposited());
+            System.out.println(" presents and waited " + /* TODO */ "s.");
         }
         System.out.println();
 
-        int giftsOnMachine = 0;
-        int giftsInSacks = 0;
-        // TODO - calculate these numbers!
+        // Sum gifts in Hoppers, Conveyor belts, and Turntables
+        int giftsOnMachine = Hopper.getTotalPresents() + getConveyorCount() + getTurntableCount();
+        int giftsInSacks = Sack.getTotalPresents();
 
-        System.out.print("\nOut of " + giftsDeposited + " gifts deposited, ");
+        System.out.print("\nOut of " + totalPresents + " gifts deposited, ");
         System.out.print(giftsOnMachine + " are still on the machine, and ");
         System.out.println(giftsInSacks + " made it into the sacks");
 
-        int missing = giftsDeposited - giftsInSacks - giftsOnMachine;
+        int missing = totalPresents - giftsInSacks - giftsOnMachine;
         System.out.println(missing + " gifts went missing.");
 
     }

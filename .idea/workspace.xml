@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="SCOPE_TYPE" value="8" />
+    <option name="CUSTOM_SCOPE_NAME" value="Module 'present-sorting-machine'" />
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e79c78f1-a6d0-4cb2-8913-efde15722d29" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/present-sorting-machine.iml" beforeDir="false" afterPath="$PROJECT_DIR$/present-sorting-machine.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Connection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Connection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ConnectionType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ConnectionType.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Conveyor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Conveyor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ErrorCodes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ErrorCodes.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Hopper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Hopper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ParseStage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ParseStage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ParserType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ParserType.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Present.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Present.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PresentSortingMachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/PresentSortingMachine.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Sack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Sack.java" afterDir="false" />
@@ -48,7 +59,11 @@
     "Repository.Attach.Sources": "false",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true"
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.lookFeel"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -72,5 +87,15 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.NullPointerException" package="java.lang" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

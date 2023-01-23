@@ -1,5 +1,4 @@
 /**
- *
  * @author npmitchell
  */
 public enum ConnectionType {

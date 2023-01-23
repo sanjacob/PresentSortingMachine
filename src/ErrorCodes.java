@@ -1,3 +1,6 @@
+/**
+ * @author Jacob
+ */
 public enum ErrorCodes {
     INPUT_FILE_IO_ERROR(1, "Error reading file."),
     HOPPER_AT_CAPACITY(2, "Hopper must be large enough to contain gifts."),

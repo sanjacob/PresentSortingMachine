@@ -1,5 +1,6 @@
-import java.lang.reflect.Type;
-
+/**
+ * Represents a different section of the configuration file.
+ */
 public enum ParserType {
     BELTS(0),
     HOPPERS(1),
@@ -8,7 +9,7 @@ public enum ParserType {
     PRESENTS(4),
     TIMER(5);
 
-    private int index;
+    private final int index;
     ParserType(int index) {
         this.index = index;
     }
