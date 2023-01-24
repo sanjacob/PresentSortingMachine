@@ -1,4 +1,5 @@
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Main {
     /**
@@ -6,8 +7,8 @@ public class Main {
      * @param args Command-line arguments (unused).
      */
     public static void main(String[] args) {
-        String filePath = "scenario1.txt";
-        Conveyor.setLoggerLevel(Level.WARNING);
+        String filePath = "scenario6.txt";
+        setLoggingLevels();
 
         // Read in file
         var machine = new PresentSortingMachine(filePath);
@@ -17,5 +18,13 @@ public class Main {
             throw new RuntimeException(e);
         }
         machine.printReport();
+    }
+
+    private static void setLoggingLevels() {
+        Conveyor.setLoggerLevel(Level.WARNING);
+        Elf.setLoggerLevel(Level.INFO);
+        Sack.setLoggerLevel(Level.INFO);
+        Turntable.setLoggerLevel(Level.INFO);
+        Hopper.setLoggerLevel(Level.INFO);
     }
 }

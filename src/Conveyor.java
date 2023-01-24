@@ -26,7 +26,7 @@ public class Conveyor
     @GuardedBy("this")
     private int count;
 
-    private static final Logger LOGGER = Logger.getLogger(Turntable.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Conveyor.class.getName());
 
     /**
      * @return ID of Conveyor.
@@ -48,12 +48,12 @@ public class Conveyor
         tail = 0;
         head = 0;
         count = 0;
-        LOGGER.log(Level.INFO, String.format("Created Conveyor %s", id));
     }
 
     synchronized static public void setLoggerLevel(Level level) {
         LOGGER.setLevel(level);
     }
+
     /**
      * Adds a hopper to the map of possible destinations.
      * @param hopperID The ID of the hopper.
@@ -227,6 +227,8 @@ public class Conveyor
             int dest = beltStream.nextInt();
             conveyor.addDestination(dest);
         }
+
+        LOGGER.log(Level.INFO, "Set up Conveyor " + id);
         return conveyor;
     }
 }

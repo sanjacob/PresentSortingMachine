@@ -2,6 +2,7 @@ import net.jcip.annotations.GuardedBy;
 
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -32,8 +33,21 @@ public class Turntable extends Thread
     @GuardedBy("this")
     private boolean hasPresent = false;
 
+    @GuardedBy("this")
+    private boolean blocked = false;
+
+    private static final Logger LOGGER = Logger.getLogger(Turntable.class.getName());
+
+    synchronized static public void setLoggerLevel(Level level) {
+        LOGGER.setLevel(level);
+    }
+
     synchronized public int count() {
         return hasPresent ? 1 : 0;
+    }
+
+    synchronized boolean isBlocked() {
+        return blocked;
     }
 
     /**
@@ -100,24 +114,19 @@ public class Turntable extends Thread
 
                                 // Move present in
                                 move();
-
                                 // Turn if necessary
                                 turn(port, outputPort);
-
                                 // Move present out
                                 move();
 
                                 Sack sack = connections[outputPort].sack;
 
-                                // Since this turntable is the only producer for the turntable, this is a guarantee
-                                if (!sack.isFull()) {
-                                    sack.putPresent(present);
-                                    hasPresent = false;
-                                }
-
-                                // TODO: Handle what to do when sack is full
+                                // Will wait until Sack is empty
+                                sack.putPresent(present);
+                                hasPresent = false;
                             } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
+                                System.out.println("Turntable " + id + " is stopping.");
+                                return;
                             }
                         }
                     }
@@ -174,6 +183,7 @@ public class Turntable extends Thread
             }
         }
 
+        LOGGER.log(Level.INFO, "Set up Turntable " + tableId);
         return turntable;
     }
 }

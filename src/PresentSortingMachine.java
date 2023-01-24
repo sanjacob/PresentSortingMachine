@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.lang.Thread.sleep;
 
@@ -10,6 +12,7 @@ public class PresentSortingMachine {
     private Conveyor[] belts;
     private Hopper[] hoppers;
     private Sack[] sacks;
+    private Elf elf;
     private Turntable[] tables;
 
     private int timerLength;
@@ -21,9 +24,15 @@ public class PresentSortingMachine {
     /**
      * The number of milliseconds to wait between updates.
      */
-    private final int WAIT_INTERVAL = 1000;
+    private final int WAIT_INTERVAL = 10000;
 
-    private final int SHUTDOWN_WAIT = 1000;
+    private final int SHUTDOWN_WAIT = 4000;
+
+    private static final Logger LOGGER = Logger.getLogger(PresentSortingMachine.class.getName());
+
+    synchronized static public void setLoggerLevel(Level level) {
+        LOGGER.setLevel(level);
+    }
 
     /**
      * Create a new Present Sorting Machine instance
@@ -32,16 +41,20 @@ public class PresentSortingMachine {
     public PresentSortingMachine(String fileName) {
         configFile = fileName;
         parseFile(fileName);
+
+        // Create elves
+        elf = new Elf(1, sacks);
     }
 
     public void run() throws InterruptedException {
         System.out.println("Starting Hoppers and Turntables...");
+
         startHoppersAndTables();
 
         long time = 0;
         long currentTime = 0;
         startTime = System.currentTimeMillis();
-        System.out.println("*** Machine Started ***");
+        System.out.println("*** Machine Started at ***");
 
         while (time < timerLength)
         {
@@ -60,18 +73,29 @@ public class PresentSortingMachine {
             System.out.println("\nInterim Report @ " + time + "s:");
 
             System.out.println(Hopper.getTotalPresents() + " presents remaining in hoppers;");
-            System.out.println(Sack.getTotalPresents() + " presents sorted into sacks.\n");
-
+            System.out.println(Sack.getPresentsCollected() + " presents sorted into sacks.\n");
         }
 
         endTime = System.currentTimeMillis();
-        System.out.println("*** Input Stopped after " + (endTime - startTime) / 1000 + "s. ***");
 
+        System.out.println("*** Input Stopped after " + (endTime - startTime) / 1000 + "s. ***");
         stopHoppers();
+
+        System.out.println("*** Releasing the Elves to empty the Sacks. ***");
+        startElves();
+
+        // Wait until Sack has finished
+        while (!((totalPresents - Hopper.getTotalPresents()) == Sack.getPresentsCollected())) {
+            System.out.println(Sack.getPresentsCollected() + " have reached the Sacks out of " + totalPresents);
+            sleep(SHUTDOWN_WAIT);
+        }
+
+        stopTurntables();
+        stopElves();
 
         // Wait until Sacks are full or all presents have been deposited
         joinHoppersAndTables();
-
+        joinElves();
         endTime = System.currentTimeMillis();
         System.out.println("*** Machine completed shutdown after " + (endTime - startTime) / 1000 + "s. ***");
 
@@ -92,6 +116,14 @@ public class PresentSortingMachine {
         for (Hopper hopper : hoppers) {
             hopper.start();
         }
+    }
+
+    private void startElves() {
+        elf.start();
+    }
+
+    private void stopElves() {
+        elf.interrupt();
     }
 
     /**
@@ -129,6 +161,10 @@ public class PresentSortingMachine {
         }
     }
 
+    private void joinElves() throws InterruptedException {
+        elf.join();
+    }
+
     /**
      * Parse a configuration file following a specific format.
      * @param fileName The file name of the config file.
@@ -152,6 +188,7 @@ public class PresentSortingMachine {
                         if (parserType == ParserType.TIMER) {
                             stage = ParseStage.CLEAR;
                             timerLength = sectionIndex;
+                            LOGGER.log(Level.INFO, "The machine will run for " + timerLength + "s");
                         }
                         break;
                     case COUNT:
@@ -287,16 +324,19 @@ public class PresentSortingMachine {
 
         for (Hopper hopper : hoppers) {
             System.out.print("Hopper " + hopper.getHopperId() + " deposited " + hopper.presentsDeposited());
-            System.out.println(" presents and waited " + /* TODO */ "s.");
+            System.out.println(" presents and waited " + hopper.getWaitingTime() + "s.");
         }
+
         System.out.println();
 
         // Sum gifts in Hoppers, Conveyor belts, and Turntables
         int giftsOnMachine = Hopper.getTotalPresents() + getConveyorCount() + getTurntableCount();
-        int giftsInSacks = Sack.getTotalPresents();
+        int giftsInSacks = Sack.getPresentsCollected();
 
-        System.out.print("\nOut of " + totalPresents + " gifts deposited, ");
-        System.out.print(giftsOnMachine + " are still on the machine, and ");
+        int deposited = totalPresents - Hopper.getTotalPresents();
+
+        System.out.println("\nOut of " + deposited + " gifts deposited, and " + totalPresents + " gifts in total:");
+        System.out.print(giftsOnMachine + " are still on the machine (incl. Hoppers), and ");
         System.out.println(giftsInSacks + " made it into the sacks");
 
         int missing = totalPresents - giftsInSacks - giftsOnMachine;

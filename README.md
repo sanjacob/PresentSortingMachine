@@ -1,4 +1,4 @@
-# Patent Present-Sorting Machine
+# Present Sorting Machine
 
 ![GPLv2][license-badge]
 

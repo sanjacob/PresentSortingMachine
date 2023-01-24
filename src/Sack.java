@@ -2,6 +2,8 @@ import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Sacks should be implemented as a fixed size array, and act as a buffer for depositing Presents.
@@ -28,13 +30,19 @@ public class Sack
      * Hold a global count of all presents instead of trying to acquire locks for every Sack when computing count.
      */
     @GuardedBy("Sack")
-    private static int totalPresents = 0;
+    private static int presentsCollected = 0;
+
+    private static final Logger LOGGER = Logger.getLogger(Sack.class.getName());
+
+    synchronized static public void setLoggerLevel(Level level) {
+        LOGGER.setLevel(level);
+    }
 
     /**
      * Increase global count of Presents held in Sacks.
      */
     synchronized private static void increaseTotal() {
-        ++totalPresents;
+        ++presentsCollected;
     }
 
     /**
@@ -53,10 +61,11 @@ public class Sack
 
     /**
      * Get the global amount of presents inside all Sacks.
+     *
      * @return The amount.
      */
-    synchronized public static int getTotalPresents() {
-        return totalPresents;
+    synchronized public static int getPresentsCollected() {
+        return presentsCollected;
     }
 
     /**
@@ -85,21 +94,38 @@ public class Sack
 
     /**
      * Puts present in Sack array.
-     * @apiNote Does not check index is inside bounds.
+     * @apiNote Waits until Sack is not full.
      * @param present The Present to place in the Sack.
      */
-    synchronized public void putPresent(Present present) {
+    synchronized public void putPresent(Present present) throws InterruptedException {
+        while(isFull()) {
+            wait();
+        }
+
         // Append item and increase count
         accumulation[numPresents] = present;
         numPresents++;
         increaseTotal();
+
+        notifyAll();
     }
 
     /**
      * Resets array count, does not null-out elements.
      */
-    synchronized public void clear() {
-        numPresents = 0;
+    synchronized public boolean empty(int timeout) throws InterruptedException {
+        if (!isFull()) {
+            wait(timeout);
+        }
+
+        boolean wasFull = isFull();
+
+        if (wasFull) {
+            numPresents = 0;
+            notifyAll();
+        }
+
+        return wasFull;
     }
 
     //TODO - Add more methods
@@ -118,6 +144,8 @@ public class Sack
         sackStream.next(); // skip "age"
 
         String age = sackStream.next();
+
+        LOGGER.log(Level.INFO, "Set up Sack " + id);
         return new Sack(id, capacity, age);
     }
 

@@ -2,6 +2,8 @@ import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Hoppers have a collection of presents.
@@ -46,6 +48,17 @@ public class Hopper extends Thread
     private static int totalPresents = 0;
 
     /**
+     * Holds total time waiting for buffer to become free.
+     */
+    private long waitingTime = 0;
+
+    private static final Logger LOGGER = Logger.getLogger(Hopper.class.getName());
+
+    synchronized static public void setLoggerLevel(Level level) {
+        LOGGER.setLevel(level);
+    }
+
+    /**
      * @return The ID of the Hopper.
      */
     public int getHopperId() {
@@ -84,8 +97,15 @@ public class Hopper extends Thread
         return numPresents;
     }
 
+    /**
+     * @return The number of presents that left the hopper.
+     */
     synchronized public int presentsDeposited() {
         return collection.length - numPresents;
+    }
+
+    synchronized public long getWaitingTime() {
+        return waitingTime/1000;
     }
 
     /**
@@ -127,25 +147,34 @@ public class Hopper extends Thread
     @Override
     public void run() {
         // Fill should not be called once the thread is active, therefore it should be synchronized
-        synchronized (this) {
-            for (Present present : collection){
-                // Skip presents after thread is interrupted
-                if (!this.isInterrupted()) {
-                    try {
-                        sleep(1000 / speed);
-                    } catch (InterruptedException ignored) {}
+        for (Present present : collection){
+            // Skip presents after thread is interrupted
+            if (!this.isInterrupted()) {
+                try {
+                    sleep(1000 / speed);
 
-                    try {
-                        belt.putPresent(present);
-                        --numPresents;
-                        decreaseTotal();
-                    } catch (InterruptedException e) {
-                        System.err.println("The program was interrupted while a Hopper was active");
-                        throw new RuntimeException(e);
-                    }
+                    // Start timer
+                    long startTime = System.currentTimeMillis();
+
+                    LOGGER.log(Level.INFO, String.format("Hopper %s deposited item (%s)", id, present.destination()));
+                    belt.putPresent(present);
+
+                    // Record wait
+                    waitingTime += (System.currentTimeMillis() - startTime);
+
+                    --numPresents;
+                    decreaseTotal();
+                } catch (InterruptedException e) {
+                    System.err.printf("The hopper %s was stopped before it finished depositing presents.%n", id);
+                    return;
                 }
             }
         }
+
+        if (!this.isInterrupted()) {
+            LOGGER.log(Level.INFO, "Hopper " + id + " stopped because it ran out of presents.");
+        }
+
     }
 
     /**
@@ -166,6 +195,8 @@ public class Hopper extends Thread
         hopperStream.next(); // skip "speed"
 
         int speed = hopperStream.nextInt();
+
+        LOGGER.log(Level.INFO, "Set up Hopper " + id);
 
         return new Hopper(id, belts[belt - 1], capacity, speed);
     }
