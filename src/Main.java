@@ -7,7 +7,7 @@ public class Main {
      * @param args Command-line arguments (unused).
      */
     public static void main(String[] args) {
-        String filePath = "scenario6.txt";
+        String filePath = "scenario9.txt";
         setLoggingLevels();
 
         // Read in file
@@ -22,9 +22,9 @@ public class Main {
 
     private static void setLoggingLevels() {
         Conveyor.setLoggerLevel(Level.WARNING);
-        Elf.setLoggerLevel(Level.INFO);
-        Sack.setLoggerLevel(Level.INFO);
-        Turntable.setLoggerLevel(Level.INFO);
-        Hopper.setLoggerLevel(Level.INFO);
+        Elf.setLoggerLevel(Level.WARNING);
+        Sack.setLoggerLevel(Level.WARNING);
+        Turntable.setLoggerLevel(Level.WARNING);
+        Hopper.setLoggerLevel(Level.WARNING);
     }
 }

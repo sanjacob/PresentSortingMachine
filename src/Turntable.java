@@ -119,11 +119,17 @@ public class Turntable extends Thread
                                 // Move present out
                                 move();
 
-                                Sack sack = connections[outputPort].sack;
+                                // Put present in either Sack or Conveyor
+                                if (connections[outputPort].connType == ConnectionType.OutputSack) {
+                                    // Will wait until Sack is empty
+                                    connections[outputPort].sack.putPresent(present);
+                                } else {
+                                    connections[outputPort].belt.putPresent(present);
+                                }
 
-                                // Will wait until Sack is empty
-                                sack.putPresent(present);
                                 hasPresent = false;
+
+
                             } catch (InterruptedException e) {
                                 System.out.println("Turntable " + id + " is stopping.");
                                 return;
