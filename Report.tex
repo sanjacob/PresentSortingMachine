@@ -1,0 +1,338 @@
+% Simulation Report for the Present Sorting Machine
+% Jacob Sánchez Pérez (jsanchez-perez@uclan.ac.uk)
+% Advanced Software Modelling
+% University of Central Lancashire
+
+\documentclass[a4paper,12pt]{article}
+
+% PDF Metadata
+\usepackage{hyperref}
+\hypersetup{
+    hidelinks,
+    pdftitle={A Discussion of Data Science in Healthcare},
+    pdfauthor={Jacob Sánchez}
+}
+
+% Code
+\usepackage{minted}
+
+% Referencing and more
+\usepackage[british]{babel}
+\usepackage{csquotes}
+\usepackage[style=apa,backend=biber]{biblatex}
+
+\title{Present Sorting Machine: \\Output Sample and Questions}
+\author{Jacob Sánchez Pérez\\ University of Central Lancashire\\\texttt{jsanchez-perez@uclan.ac.uk}}
+\date{}
+
+\begin{document}
+    \maketitle
+    \section{Output Samples}
+    
+    \subsection{Scenario 1}
+    
+    \begin{minted}[autogobble]{text}
+    INFO: The machine will run for 30s
+    Starting Hoppers and Turntables...
+    *** Machine Started at ***
+
+    Interim Report @ 10s:
+    1 presents remaining in hoppers;
+    5 presents sorted into sacks.
+
+
+    Interim Report @ 20s:
+    0 presents remaining in hoppers;
+    10 presents sorted into sacks.
+
+
+    Interim Report @ 30s:
+    0 presents remaining in hoppers;
+    10 presents sorted into sacks.
+
+    *** Input Stopped after 30s. ***
+    *** Releasing the Elves to empty the Sacks. ***
+    *** Machine completed shutdown after 30s. ***
+
+
+    FINAL REPORT
+
+    Configuration: scenarios/scenario1.txt
+    Total Run Time: 30s.
+    Hopper 1 deposited 10 presents and waited 0s.
+
+
+    Out of 10 gifts deposited, and 10 gifts in total:
+    0 are still on the machine (incl. Hoppers), and 10 made it into the sacks
+    0 gifts went missing.
+    \end{minted}
+
+    \subsection{Scenario 2}
+    \begin{minted}[autogobble]{text}
+    INFO: The machine will run for 60s
+    Starting Hoppers and Turntables...
+    *** Machine Started at ***
+
+    Interim Report @ 10s:
+    34 presents remaining in hoppers;
+    5 presents sorted into sacks.
+
+
+    Interim Report @ 20s:
+    28 presents remaining in hoppers;
+    10 presents sorted into sacks.
+
+
+    Interim Report @ 30s:
+    23 presents remaining in hoppers;
+    15 presents sorted into sacks.
+
+
+    Interim Report @ 40s:
+    18 presents remaining in hoppers;
+    20 presents sorted into sacks.
+
+
+    Interim Report @ 50s:
+    12 presents remaining in hoppers;
+    26 presents sorted into sacks.
+
+
+    Interim Report @ 60s:
+    7 presents remaining in hoppers;
+    31 presents sorted into sacks.
+
+    *** Input Stopped after 60s. ***
+    *** Releasing the Elves to empty the Sacks. ***
+    31 have reached the Sacks out of 44
+    The hopper 1 was stopped before it finished depositing presents.
+    33 have reached the Sacks out of 44
+    35 have reached the Sacks out of 44
+    Elf 1 was stopped while waiting.
+    *** Machine completed shutdown after 72s. ***
+
+
+    FINAL REPORT
+
+    Configuration: scenarios/scenario2.txt
+    Total Run Time: 72s.
+    Hopper 1 deposited 37 presents and waited 40s.
+
+
+    Out of 37 gifts deposited, and 44 gifts in total:
+    7 are still on the machine (incl. Hoppers), and 37 made it into the sacks
+    0 gifts went missing.
+    \end{minted}
+
+
+    \subsection{Scenario 3}
+    \begin{minted}[autogobble]{text}
+    INFO: The machine will run for 120s
+    Starting Hoppers and Turntables...
+    *** Machine Started at ***
+
+    Interim Report @ 10s:
+    34 presents remaining in hoppers;
+    5 presents sorted into sacks.
+
+
+    Interim Report @ 20s:
+    28 presents remaining in hoppers;
+    10 presents sorted into sacks.
+
+
+    Interim Report @ 30s:
+    23 presents remaining in hoppers;
+    15 presents sorted into sacks.
+
+
+    Interim Report @ 40s:
+    18 presents remaining in hoppers;
+    20 presents sorted into sacks.
+
+
+    Interim Report @ 50s:
+    12 presents remaining in hoppers;
+    26 presents sorted into sacks.
+
+
+    Interim Report @ 60s:
+    7 presents remaining in hoppers;
+    31 presents sorted into sacks.
+
+
+    Interim Report @ 70s:
+    2 presents remaining in hoppers;
+    36 presents sorted into sacks.
+
+
+    Interim Report @ 80s:
+    0 presents remaining in hoppers;
+    40 presents sorted into sacks.
+
+
+    Interim Report @ 90s:
+    0 presents remaining in hoppers;
+    40 presents sorted into sacks.
+
+
+    Interim Report @ 100s:
+    0 presents remaining in hoppers;
+    40 presents sorted into sacks.
+
+
+    Interim Report @ 110s:
+    0 presents remaining in hoppers;
+    40 presents sorted into sacks.
+
+
+    Interim Report @ 120s:
+    0 presents remaining in hoppers;
+    40 presents sorted into sacks.
+
+    *** Input Stopped after 120s. ***
+    *** Releasing the Elves to empty the Sacks. ***
+    40 have reached the Sacks out of 44
+    43 have reached the Sacks out of 44
+    Elf 1 was stopped while waiting.
+    *** Machine completed shutdown after 128s. ***
+
+
+    FINAL REPORT
+
+    Configuration: scenarios/scenario3.txt
+    Total Run Time: 128s.
+    Hopper 1 deposited 44 presents and waited 50s.
+
+
+    Out of 44 gifts deposited, and 44 gifts in total:
+    0 are still on the machine (incl. Hoppers), and 44 made it into the sacks
+    0 gifts went missing.
+    \end{minted}
+
+
+        
+    \subsection{Scenario 4}
+    \begin{minted}[autogobble]{text}
+    INFO: The machine will run for 60s
+    Starting Hoppers and Turntables...
+    *** Machine Started at ***
+
+    Interim Report @ 10s:
+    8 presents remaining in hoppers;
+    4 presents sorted into sacks.
+
+
+    Interim Report @ 20s:
+    2 presents remaining in hoppers;
+    8 presents sorted into sacks.
+
+
+    Interim Report @ 30s:
+    0 presents remaining in hoppers;
+    13 presents sorted into sacks.
+
+
+    Interim Report @ 40s:
+    0 presents remaining in hoppers;
+    18 presents sorted into sacks.
+
+
+    Interim Report @ 50s:
+    0 presents remaining in hoppers;
+    20 presents sorted into sacks.
+
+
+    Interim Report @ 60s:
+    0 presents remaining in hoppers;
+    20 presents sorted into sacks.
+
+    *** Input Stopped after 60s. ***
+    *** Releasing the Elves to empty the Sacks. ***
+    *** Machine completed shutdown after 60s. ***
+
+
+    FINAL REPORT
+
+    Configuration: scenarios/scenario4.txt
+    Total Run Time: 60s.
+    Hopper 1 deposited 20 presents and waited 11s.
+
+
+    Out of 20 gifts deposited, and 20 gifts in total:
+    0 are still on the machine (incl. Hoppers), and 20 made it into the sacks
+    0 gifts went missing.
+    \end{minted}
+
+
+    \subsection{Scenario 5}
+    \begin{minted}[autogobble]{text}
+        
+    \end{minted}
+
+    \section{Questions}
+    \textbf{Explain how your code works (or, if it doesn’t, how you could make it work)
+    to stop all the threads and finish gracefully at the end of the simulation.\\}
+    
+    \noindent
+    When the timer runs out, the machine will first stop depositing Presents by
+    calling \mintinline{java}{thread.interrupt()} on every hopper:
+    
+    \inputminted[firstline=132, lastline=137, gobble=2]{java}{src/PresentSortingMachine.java}
+   
+    \noindent
+    The Hopper will catch the \mintinline{java}{InterruptedException()} and stop running.
+
+    \inputminted[gobble=14, firstline=172, lastline=176, breaklines]{java}{src/Hopper.java}
+
+    \noindent
+    Then, the machine will start an Elf thread, which will empty any full Sacks.
+    
+    \inputminted[firstline=30, lastline=33, gobble=10]{java}{src/Elf.java}
+    
+    \noindent
+    Meanwhile, the Turntables are still active, and if the machine configuration
+    allows it, all Presents in the machine should make it to a Sack.
+    The main thread of the machine will periodically check if all gifts deposited
+    have reached the Sacks. When they do, the machine will stop both the Elves
+    and Turntables (with \mintinline{java}{thread.interrupt()}).
+    
+    \noindent
+    Finally, the machine waits until these threads stop with the
+    \mintinline{java}{thread.join()} method.
+    
+    \inputminted[firstline=152, lastline=162, gobble=2]{java}{src/PresentSortingMachine.java}
+    
+    \noindent
+    \textbf{If you believe there is a chance of deadlock or livelock in the system,
+    explain how it might happen, and describe any extra rules or special actions
+    you have taken to avoid any occurrence of such.
+    Conversely, if you believe deadlock cannot occur, explain why.\\}
+    
+    For deadlock to occur, four conditions must be true:
+    \begin{enumerate}
+     \item Mutual Exclusion
+     \item Hold and Wait
+     \item No Preemption
+     \item Circular Wait
+    \end{enumerate}
+    
+    \noindent
+    Conditions 1 and 3 are true for the machine, since some objects
+    are held in Mutual Exclusion, and there is no Pre-emptive scheduler to
+    stop threads.
+    
+    \noindent
+    However, the Hoppers (Producer) and Turntables (Producer/Consumer) will not
+    face the issue of circular wait, or holding and waiting.
+    Deadlock is avoided by giving up the Conveyor mutex while waiting for items
+    to be Produced/Consumed.
+    This means that any other Producers/Consumers will be able to affect the buffer,
+    instead of waiting forever on another thread to release the lock.
+    Therefore deadlock should not occur in this implementation of the machine.
+    However, a faulty machine configuration can cause the machine to run forever,
+    if there is a loop in the system that causes Presents to not move forward.
+
+\end{document}
+
+
