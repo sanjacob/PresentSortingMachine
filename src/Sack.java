@@ -104,6 +104,7 @@ public class Sack
 
         // Append item and increase count
         accumulation[numPresents] = present;
+        LOGGER.log(Level.INFO, "Putting present " + present.destination() + " in sack " + id);
         numPresents++;
         increaseTotal();
 

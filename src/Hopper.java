@@ -47,6 +47,8 @@ public class Hopper extends Thread
     @GuardedBy("Hopper")
     private static int totalPresents = 0;
 
+    private int initialNumPresents;
+
     /**
      * Holds total time waiting for buffer to become free.
      */
@@ -101,7 +103,7 @@ public class Hopper extends Thread
      * @return The number of presents that left the hopper.
      */
     synchronized public int presentsDeposited() {
-        return collection.length - numPresents;
+        return initialNumPresents - numPresents;
     }
 
     synchronized public long getWaitingTime() {
@@ -122,6 +124,7 @@ public class Hopper extends Thread
         belt = con;
         this.speed = speed;
         numPresents = 0;
+        initialNumPresents = 0;
     }
 
     /**
@@ -132,9 +135,10 @@ public class Hopper extends Thread
     synchronized public void fill(Present p) throws IndexOutOfBoundsException
     {
         if (numPresents < collection.length){
-            //System.out.println("Inserting present " + p.destination() + " at position " + numPresents);
+            System.out.println("Inserting present " + p.destination() + " at position " + numPresents);
             collection[numPresents] = p;
             numPresents++;
+            initialNumPresents++;
             increaseTotal();
         } else {
             throw new IndexOutOfBoundsException(ErrorCodes.HOPPER_AT_CAPACITY.getMsg());
@@ -147,7 +151,8 @@ public class Hopper extends Thread
     @Override
     public void run() {
         // Fill should not be called once the thread is active, therefore it should be synchronized
-        for (Present present : collection){
+        for (int i = 0; i < initialNumPresents; ++i) {
+            Present present = collection[i];
             // Skip presents after thread is interrupted
             if (!this.isInterrupted()) {
                 try {
@@ -156,7 +161,7 @@ public class Hopper extends Thread
                     // Start timer
                     long startTime = System.currentTimeMillis();
 
-                    LOGGER.log(Level.INFO, String.format("Hopper %s deposited item (%s)", id, present.destination()));
+                    LOGGER.log(Level.INFO, String.format("Hopper %s deposited item (%s) in belt %s", id, present, belt.getConveyorId()));
                     belt.putPresent(present);
 
                     // Record wait
@@ -165,7 +170,8 @@ public class Hopper extends Thread
                     --numPresents;
                     decreaseTotal();
                 } catch (InterruptedException e) {
-                    System.err.printf("The hopper %s was stopped before it finished depositing presents.%n", id);
+                    System.err.printf("The hopper %s stopped before", id);
+                    System.err.println(" it finished depositing presents.");
                     return;
                 }
             }

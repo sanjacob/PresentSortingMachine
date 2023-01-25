@@ -150,12 +150,12 @@ public class PresentSortingMachine {
      * Loop over all hoppers and turntables and wait for them to stop.
      */
     private void joinHoppersAndTables() throws InterruptedException {
-        // START the hoppers!
+        // Wait for the hoppers to stop!
         for (Hopper hopper : hoppers) {
             hopper.join();
         }
 
-        // START the turntables!
+        // Wait for the turntables to stop!
         for (Turntable table : tables) {
             table.join();
         }
@@ -180,15 +180,18 @@ public class PresentSortingMachine {
             while ((line = br.readLine()) != null) {
                 switch(stage) {
                     case CLEAR:
-                        String[] sectionHeader = line.trim().split(" ", 2);
-                        parserType = ParserType.valueOf(sectionHeader[0]);
-                        sectionIndex = (sectionHeader.length > 1) ? Integer.parseInt(sectionHeader[1]) : 1;
-                        stage = ParseStage.COUNT;
+                        // Ignore blank lines
+                        if (!line.isBlank()) {
+                            String[] sectionHeader = line.trim().split(" ", 2);
+                            parserType = ParserType.valueOf(sectionHeader[0]);
+                            sectionIndex = (sectionHeader.length > 1) ? Integer.parseInt(sectionHeader[1]) : 1;
+                            stage = ParseStage.COUNT;
 
-                        if (parserType == ParserType.TIMER) {
-                            stage = ParseStage.CLEAR;
-                            timerLength = sectionIndex;
-                            LOGGER.log(Level.INFO, "The machine will run for " + timerLength + "s");
+                            if (parserType == ParserType.TIMER) {
+                                stage = ParseStage.CLEAR;
+                                timerLength = sectionIndex;
+                                LOGGER.log(Level.INFO, "The machine will run for " + timerLength + "s");
+                            }
                         }
                         break;
                     case COUNT:

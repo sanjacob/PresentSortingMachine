@@ -1,5 +1,4 @@
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Main {
     /**
@@ -7,7 +6,7 @@ public class Main {
      * @param args Command-line arguments (unused).
      */
     public static void main(String[] args) {
-        String filePath = "scenario9.txt";
+        String filePath = "scenarios/scenario5.txt";
         setLoggingLevels();
 
         // Read in file

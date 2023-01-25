@@ -105,6 +105,7 @@ public class Turntable extends Thread
                             // This condition won't change since one Conveyor can only be emptied by this Turntable.
                             try {
                                 Present present = conn.belt.takePresent();
+                                LOGGER.log(Level.INFO, "Taking " + present + " from belt " + conn.belt.getConveyorId());
                                 hasPresent = true;
 
                                 final String dest = present.destination();
